@@ -1,0 +1,75 @@
+button {
+    /* Button
+    History: #2d3d73, #495c9c */
+    background-color: #495c9c;
+    color: white;
+    border: none;
+    border-radius: 1;
+}
+button:hover {
+    /* Hover button
+    History: #5e73b9 */
+    background-color: #5e73b9;
+}
+button:active {
+    /* Active (clicked) button
+    History: #8293c9 */
+    background-color: #8293c9;
+}
+h1 {
+    /* Header (regular)
+    History: #d2d9f1 */
+    color:#d2d9f1;
+    font-size:12px;
+}
+h2 {
+    /* Header (sub)
+    History: #9ca1b4 */
+    color:#9ca1b4;
+    font-size:12px;
+}
+label {
+    /* Label */
+    color:#9ca1b4;
+    font-size:12px;
+}
+hr.solid {
+    border-top: 2px solid #8293c9;
+}
+.noScrollBar::-webkit-scrollbar{
+    width: 0%;
+}
+
+/* Popups */
+.popup {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+.popup .popuptext {
+    visibility: hidden;
+    width: 160px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -5px;
+}
+.popup .show {
+    visibility: visible;
+}
+a:link {
+    color:#d2d9f1;
+}
+a:visited {
+    color:#d2d9f1;
+}
+a:hover {
+    color:#9ca1b4;
+}
+a:active {
+    color:#9ca1b4;
+}

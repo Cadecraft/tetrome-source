@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Tag Assistant</title>
+        <script src="mainmenu.js"></script>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <!-- Orig. bg color: #333745, new: #16181d -->
+    <!-- Orig. button color: #2d3d73, new: #495c9c -->
+    <!-- Orig. height: 570px -->
+    <body style="background-color:#333745;width:300px;height:1100px;" class="noScrollBar">
+        <div id="title">
+            <h4 id="title" style="color:#d2d9f1; font-size:17px; margin:-1px; margin-left:0px;">T E T R O M E</h4>
+            <h2 id="text1" style="margin:-4px; margin-bottom:8px; margin-left:0px;">#1 Stacker Game for Chrome | By Cadecraft</h4>
+        </div>
+        <div id="imgs" style="display:none;">
+            <img id="pcBac" src="images/pcBac.png" width="20" height="20">
+            <img id="pcBac_nogrid" src="images/pcBac_nogrid.png" width="20" height="20">
+            <img id="pcRed" src="images/pcRed.png" width="20" height="20">
+            <img id="pcPrp" src="images/pcPrp.png" width="20" height="20">
+            <img id="pcGrn" src="images/pcGrn.png" width="20" height="20">
+            <img id="pcYlw" src="images/pcYlw.png" width="20" height="20">
+            <img id="pcOrg" src="images/pcOrg.png" width="20" height="20">
+            <img id="pcBlu" src="images/pcBlu.png" width="20" height="20">
+            <img id="pcCyn" src="images/pcCyn.png" width="20" height="20">
+            <img id="pcGhs" src="images/pcGhs.png" width="20" height="20">
+            <img id="pcDed" src="images/pcDed.png" width="20" height="20">
+        </div>
+        <div id="divs">
+            <!-- <button id="notif">NOTIFY ME</button>
+            <button id="sync">SYNC</button> -->
+            <hr class="solid" style="margin-bottom:-7px; margin-top:3px;">
+        </div>
+        <div id="scoring">
+            <h4 id="score" style="margin:-4px; margin-top:12px; margin-left:0px; font-size:20px; color:#d2d9f1; white-space:pre-wrap;">Score: 0</h4>
+            <button id="resets" style="position:absolute; top:10px; left:250px;">Restart</button>
+            <h2 id="b2b" style="margin:2px; margin-left:0px; margin-bottom:-4px; white-space:pre-wrap;">B2B: 0</h4>
+            <h2 id="combo" style="margin:2px; margin-left:0px; margin-bottom:-4px; white-space:pre-wrap;">Combo: 0</h4>
+            <h2 id="highscore" style="margin:2px; margin-left:0px; white-space:pre-wrap;">Highscore: 0</h4>
+            <hr class="solid">
+        </div>
+        
+        <!-- Field -->
+        <div id="field" style="margin-left: 15;">
+            <canvas id="mainfield" width="300" height="400" style="background-color:black;"></canvas>
+            <hr class="solid">
+        </div>
+
+        <div id="settings">
+            <h1 style="margin-bottom:2px;">Control/settings (SCROLL FOR MORE)</h4>
+            <button id="set_ctrl" style="margin-bottom:-4px;">Control</button>
+            <button id="set_das" style="margin-bottom:-4px;">-DAS</button>
+            <button id="set_arr" style="margin-bottom:-4px;">-ARR</button>
+            <button id="grid" style="margin-bottom:-4px;">Grid</button>
+            <select id="presets" name="presets">
+                <option value="default">Default</option>
+                <option value="beginner">Beginner</option>
+                <option value="wasd">WASD</option>
+                <option value="custom">...Custom</option>
+            </select>
+            <!-- <button id="set_res" style="margin-bottom:-4px;">Reset to Defaults</button> -->
+            <h2 id="setdisp" style="margin-bottom:0px;">
+                CURRENT SETTINGS:
+                <br>Controls - WASD
+                <br>DAS - 10ms
+                <br>ARR - 10ms
+                <br><br>Note: DAS is the time between your first keypress and when the piece starts automatically moving.
+                <br>ARR is the speed at which it then moves.
+                <br><br>Higher values make the controls slower and "easier", while lower values are faster.
+            </h4>
+        </div>
+
+        <div id="help">
+            <h1 style="margin-bottom:2px;">Help/learning</h4>
+            <button id="lk_guid" style="margin-bottom:2px;">About Guideline (default) Controls</button>
+            <button id="lk_wasd" style="margin-bottom:2px;">About WASD Controls</button>
+            <button id="lk_dasarr" style="margin-bottom:2px;">About DAS/ARR</button>
+            <!-- <button id="lk_strat" style="margin-bottom:2px;">Strategy</button> -->
+        </div>
+
+        <div id="extras">
+            <h1 style="margin-bottom:0px;">Extras</h1>
+            <h2 style="display:inline;">Cheese-interval (seconds) (0=none)</h2>
+            <input type="text" id="cheeseint" placeholder="Cheese-interval (s)" value="0" style="margin-bottom:2px; width:50px; display:block;">
+        </div>
+
+        <div id="creds">
+            <h1 style="margin-bottom:-10px;">Credits</h1>
+            <h2>
+                Programming and art: Cadecraft
+                <br>Ideas and help: Leo, Tivect
+                <br><a href="https://cadecraft.herokuapp.com" target="_blank">My website</a>
+            </h2>
+        </div>
+
+        <div id="sys">
+            <h1 style="margin-bottom:0px;">System</h1>
+            <button id="clearall" style="margin-bottom:2px;">Clear all data (will reset highscores)</button>
+            <br>
+            <input type="checkbox" id="framelim" style="display:none;" checked>
+            <label for="framelim" style="display:none;">Normalize frame interval (advanced)</label>
+            <br>
+            <select id="bwidth" name="bwidth" style="display:none;">
+                <option value="10">Board-width:10</option>
+                <option value="8">Board-width:8</option>
+                <option value="4">Board-width:4</option>
+            </select>
+        </div>
+
+        <div id="statusbar">
+            <h2 id="status">Status: Normal</h2>
+        </div>
+    </body>
+</html>
