@@ -88,7 +88,8 @@ var blockpcs = {
     '7': 'pcCyn',
     '-1': 'pcGhs', // Ghost
     '-2': 'pcDed', // Dead
-    '-3': 'pcBac_nogrid' // BG no grid
+    '-3': 'pcBac_nogrid', // BG no grid
+    '-5': 'pcAssist'
 }
 // Dbg
 var dbg = '';
@@ -759,6 +760,11 @@ function render() {
             var thisblock = thisframe[y][x];
             if(thisblock != 0 && isdead) { thisblock = -2; }
             if(thisblock == 0 && !gridon ) { thisblock = -3; }
+            if(thisblock == 0 && document.getElementById('openeras').value != "none") {
+                if(getOpenerAs(document.getElementById('openeras').value)[y][x] == 1) {
+                    thisblock = -5;
+                }
+            }
             const img = document.getElementById(blockpcs[thisblock]);
             ctx.drawImage(img, 0, 0, 20, 20, x*20, y*20, 20, 20);
             //ctx.fillStyle = blockcolors[thisblock];
@@ -1248,4 +1254,65 @@ function getPieceArray(inpiece) {
         ]
     };
     return all[inpiece];
+}
+
+// Opener assists
+function getOpenerAs(inopener) {
+    var all = {
+        "pco": [
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [1,1,1,1,0,0,0,0,1,1],
+                [1,1,1,1,0,0,0,1,1,1],
+                [1,1,1,1,0,0,1,1,1,1],
+                [1,1,1,1,0,0,0,1,1,1]
+            ],
+        "tki": [
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0],
+                [1,0,0,1,1,0,1,0,0,0],
+                [1,0,0,0,1,1,1,1,1,1],
+                [1,1,0,1,1,1,1,1,1,1]
+            ]
+    };
+    if(inopener == "none") {
+        console.log('err: inopener == none');
+        return;
+    } else {
+        try {
+            return all[inopener];
+        } catch(err) {
+            console.log('err: inopener does not exist');
+            return;
+        }
+    }
 }
