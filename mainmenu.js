@@ -97,6 +97,7 @@ var dbg = '';
 var wasd = false;
 var handl_das = 100;
 var handl_arr = 20;
+var sdf_instant = false;
 var gridon = true;
 // Timers
 var autotimer = 0;
@@ -400,7 +401,7 @@ function resetall() {
 
 // Load vars
 //chrome.storage.local.set({'test1': 'a value...'});
-chrome.storage.local.get(['ctrl', 'arr', 'das', 'hi', 'hiforty', 'grid'], function(data) {
+chrome.storage.local.get(['ctrl', 'arr', 'das', 'hi', 'hiforty', 'grid', 'sdf_instant'], function(data) {
     if(data.ctrl != null) {
         wasd = data.ctrl == 'wasd';
     }
@@ -418,6 +419,9 @@ chrome.storage.local.get(['ctrl', 'arr', 'das', 'hi', 'hiforty', 'grid'], functi
     }
     if(data.grid != null) {
         gridon = (data.grid == 'true');
+    }
+    if(data.sdf_instant != null) {
+        sdf_instant = (data.sdf_instant == 'true');
     }
     document.getElementById('presets').value = 'custom';
 })
@@ -454,6 +458,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById("set_das").onclick = set_das;
     document.getElementById("set_arr").onclick = set_arr;
     document.getElementById("grid").onclick = set_grid;
+    document.getElementById("inst_sdf").onclick = set_sdf_instant;
     document.getElementById("presets").onchange = set_res;
     document.getElementById("lk_guid").onclick = lk_guid;
     document.getElementById("lk_wasd").onclick = lk_wasd;
@@ -823,8 +828,11 @@ function render() {
     }
     var griddisp = 'Off';
     if(gridon) { griddisp = 'On'; }
+    var sdf_instant_disp = "Fast";
+    if(sdf_instant) { sdf_instant_disp = "Instant"; }
     document.getElementById('setdisp').innerText = 'CURRENT SETTINGS:\nControls - '
-    +wasdtxt+'\nDAS - '+handl_das+'ms\nARR - '+handl_arr+'ms\nGrid - '+griddisp+'\n\nUse the dropdown to choose a preset. Your settings and highscore will be saved.\n\n'
+    +wasdtxt+'\nDAS - '+handl_das+'ms\nARR - '+handl_arr+'ms\nGrid - '+griddisp
+    +'\nSDF - '+sdf_instant_disp+'\n\nUse the dropdown to choose a preset. Your settings and highscore will be saved.\n\n'
     +helpinfo;
     //+handl_arr+'ms\n\nNote: DAS is the time between your first keypress and when the piece starts automatically moving.\nARR is the speed at which it then moves.';
     // Render next up
@@ -950,8 +958,15 @@ function input() {
         lastroty = mypiece.y;
     }
     if(inputs.includes('soft')) {
-        if(!mypiece.drop(1)) {
+        // Based on sdf instant or not
+        if(sdf_instant) {
+            mypiece.drop(20);
             autotimer = (-1000*level)/4;
+        }
+        else {
+            if(!mypiece.drop(1)) {
+                autotimer = (-1000*level)/4;
+            }
         }
     }
     if(inputs.includes('hard')) {
@@ -1020,6 +1035,16 @@ function set_grid() {
     else {
         chrome.storage.local.set({'grid': 'false'});
     }
+    document.getElementById('presets').value = 'custom';
+}
+function set_sdf_instant() {
+    sdf_instant = !sdf_instant;
+    if(sdf_instant) {
+        chrome.storage.local.set({'sdf_instant': 'true'});
+    } else {
+        chrome.storage.local.set({'sdf_instant': 'false'});
+    }
+    document.getElementById('presets').value = 'custom';
 }
 // Reset (preset)
 function set_res() {
@@ -1028,16 +1053,19 @@ function set_res() {
         wasd = false;
         handl_das = 100;
         handl_arr = 20;
+        sdf_instant = false;
     }
     else if(val == 'beginner') {
         wasd = false;
         handl_das = 200;
         handl_arr = 40;
+        sdf_instant = false;
     }
     else if(val == 'wasd') {
         wasd = true;
         handl_das = 100;
         handl_arr = 0;
+        sdf_instant = true;
     }
     if(wasd) {
         chrome.storage.local.set({'ctrl': 'wasd'});
