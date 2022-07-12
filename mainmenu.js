@@ -1075,6 +1075,7 @@ function set_res() {
     }
     chrome.storage.local.set({'das': handl_das.toString()});
     chrome.storage.local.set({'arr': handl_arr.toString()});
+    chrome.storage.local.set({'sdf_instant': sdf_instant.toString()});
     // Unfocus for input issues
     document.getElementById('presets').blur();
 }
