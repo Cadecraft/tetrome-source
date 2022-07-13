@@ -3,14 +3,16 @@
 > T-spin detection and B2B fix
 > All-clear detection and rewards
 > Removed the "+5" notification on placing a piece
+> Added opener assists
+> Added instant soft drop setting
+> Prevented clipping on the cheese race
 */
 
 // To do:
 /*
-> Test all clear rewards?
-> Add CHEESE RACE
+> Cheese race - remove sprint score saving?
 > Add bonus stat at the bottom: All Clear Rate
-> Fix soft drop/auto drop locking issues
+> Fix soft drop/auto drop locking issues and timing
 
 > One day: Publish to web store?
 > One day: multiplayer server?
@@ -576,6 +578,12 @@ function gameloop() {
                         else {
                             mymap[y][x] = mymap[y+1][x];
                         }
+                    }
+                }
+                // Check for piece clipping; if so, move it up
+                if(!(ispiecevalid())) {
+                    if(mypiece.y >= 1) {
+                        mypiece.y --;
                     }
                 }
             }
