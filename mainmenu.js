@@ -6,6 +6,7 @@
 > Added opener assists
 > Added instant soft drop setting
 > Prevented clipping on the cheese race
+> Fixed link to new cadecraft.github.io
 */
 
 // To do:

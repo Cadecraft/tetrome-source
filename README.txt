@@ -24,7 +24,7 @@ have a nice day
 
 =-=-=-=-=-
 
-My site: https://cadecraft.herokuapp.com
+My site: https://cadecraft.github.io/
 YouTube: https://www.youtube.com/c/AwesomeCadecraft
 Discord Server: https://discord.gg/wahdQHBs4Z
 GitHub Repository: https://github.com/Cadecraft/tetrome-source
