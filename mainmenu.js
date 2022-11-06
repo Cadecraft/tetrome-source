@@ -1,5 +1,11 @@
 // Added:
 /*
+v1.1.5
+> Added drop speed factor
+> Added Recovery Challenge (random pieces tower)
+> REMOVED opener assists
+
+v1.1.4
 > T-spin detection and B2B fix
 > All-clear detection and rewards
 > Removed the "+5" notification on placing a piece
@@ -12,12 +18,14 @@
 // To do:
 /*
 > Cheese race - remove sprint score saving?
+> Improve rendering efficiency/performance?
 > Add bonus stat at the bottom: All Clear Rate
-> Fix soft drop/auto drop locking issues and timing
+> Improve soft drop/auto drop locking issues and timing
+> Improve T-spin detection
 
 > One day: Publish to web store?
 > One day: multiplayer server?
-> One day: ATM?
+> One day: APM?
 */
 
 // Vars
@@ -109,6 +117,7 @@ var arrtimer = 0;
 var ppscountertimer = 0;
 var cheeseint = 0;
 var cheesetimer = 0;
+var gravfac = 1; // gravity factor
 var flim = true;
 // Random
 var helpinfo = '';
@@ -473,8 +482,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById('text1').innerText = 'By Cadecraft | v'+chrome.runtime.getManifest().version;
     // Frame
     document.getElementById('framelim').onchange = framelimchg;
-    // Extra
+    // Extras
     document.getElementById('cheeseint').onchange = cheeseintchg;
+    document.getElementById('gravfac').onchange = gravfacchg;
+    document.getElementById('recoverychal').onclick = recoverychalgo;
     // Dbg
     sync();
 });
@@ -590,8 +601,8 @@ function gameloop() {
             }
         }
     }
-    if(!landed && autotimer >= (1000/level)) {
-        autotimer = 0;
+    if(!landed && autotimer >= (1000/level/gravfac)) {
+        autotimer = 0; // Gravity timer
         landed = mypiece.drop(1);
     }
     // Animalpha
@@ -668,7 +679,7 @@ function gameloop() {
             score_score += 1000;
         }
         // 40 lines save
-        if(score_lines >= 40 && timeto40 == 0) {
+        if(score_lines >= 40 && timeto40 == 0 && gravfac == 1) {
             timeto40 = totaltime;
             if(timeto40 < score_high40 || score_high40 == 0) {
                 score_high40 = timeto40;
@@ -703,6 +714,9 @@ function gameloop() {
                 'posx': 82, // 220
                 'posy': 88 // 330
             });
+        }
+        if(gravfac != 1) {
+            score_score = 0; // Cannot score with wrong gravity factor
         }
         // Death
         if(!ispiecevalid()) {
@@ -774,11 +788,11 @@ function render() {
             var thisblock = thisframe[y][x];
             if(thisblock != 0 && isdead) { thisblock = -2; }
             if(thisblock == 0 && !gridon ) { thisblock = -3; }
-            if(thisblock == 0 && document.getElementById('openeras').value != "none") {
+            /*if(thisblock == 0 && document.getElementById('openeras').value != "none") {
                 if(getOpenerAs(document.getElementById('openeras').value)[y][x] == 1) {
                     thisblock = -5;
                 }
-            }
+            }*/
             const img = document.getElementById(blockpcs[thisblock]);
             ctx.drawImage(img, 0, 0, 20, 20, x*20, y*20, 20, 20);
             //ctx.fillStyle = blockcolors[thisblock];
@@ -803,10 +817,10 @@ function render() {
             ctx.fillText('+'+scoremsgs[i].amt, scoremsgs[i].posx, scoremsgs[i].posy);
             // If high level, flash entire board orange/gold
             if(scoremsgs[i].amt >= 1000) {
-                ctx.globalAlpha = ctx.globalAlpha/2.5
+                ctx.globalAlpha = ctx.globalAlpha/2.5;
             }
             else {
-                ctx.globalAlpha = ctx.globalAlpha/5
+                ctx.globalAlpha = ctx.globalAlpha/5;
             }
             if(scoremsgs[i].amt >= 400) {
                 ctx.fillRect(0, 0, 300, 400);
@@ -820,7 +834,17 @@ function render() {
         document.getElementById('score').innerText = 'Block out! Score: '+score_score;
     }
     else {
-        document.getElementById('score').innerText = 'Score: '+score_score;
+        if(gravfac != 1) {
+            if(document.getElementById('score').innerText != 'Gravity factor changed (unscored)') {
+                document.getElementById('score').innerText = 'Gravity factor changed (unscored)';
+                document.getElementById('score').style.fontSize = '12px';
+            }
+        }
+        else {
+            document.getElementById('score').innerText = 'Score: '+score_score;
+            document.getElementById('score').style.fontSize = '20px';
+        }
+        
     }
     document.getElementById('b2b').innerText = 'B2B: '+score_b2b+'\t\t\tLines: '+score_lines;
     if(timeto40 != 0) {
@@ -1133,6 +1157,60 @@ function cheeseintchg() {
         cheeseint = 0;
     }
 }
+// Gravity factor change
+function gravfacchg() {
+    // Set value to a number
+    try {
+        var tryfac = parseFloat(document.getElementById('gravfac').value);
+        if(isNaN(tryfac)) {
+            tryfac = 1; //1=normal
+        }
+        if(tryfac < 0) {
+            tryfac = 0;
+        }
+        if(tryfac > 64) {
+            tryfac = 64;
+        }
+        document.getElementById('gravfac').value = tryfac;
+        gravfac = tryfac;
+    }
+    catch(err) {
+
+    }
+}
+// Recovery challenge "Go!" (random pieces tower)
+function recoverychalgo() {
+    // Fill bottom with random pieces
+    for(let i = 0; i < 8; i++) {
+        // Choose piece
+        var toaddp = getPieceArray((['z','t','s','o','l','j','i'])[Math.floor(Math.random()*7)])[0];
+        var px = Math.floor(Math.random()*6);
+        var py = 2;
+        var landed = false;
+        while(!landed) {
+            // Drop 1
+            py += 1;
+            for(let y = 0; y < 4; y++) {
+                for(let x = 0; x < 4; x++) {
+                    if(toaddp[y][x] != 0) {
+                        if(y+py >= 20) { landed = true; break; }
+                        else if(mymap[y+py][x+px] != 0) { landed = true; break; }
+                    }
+                    
+                }
+            }
+        }
+        py -= 1;
+        // Add to the screen
+        for(let y = 0; y < 4; y++) {
+            for(let x = 0; x < 4; x++) {
+                if(toaddp[y][x] != 0) {
+                    mymap[y+py][x+px] = toaddp[y][x]; //-2;
+                }
+            }
+        }
+    }
+}
 
 // Links
 function lk_guid() { helpinfo = 'Rotate: X/Z/A\nMove: Left/Right arrow\nHard drop: Space\nSoft drop: Down arrow\nHold: C/Shift\nRestart: R'; }
@@ -1294,7 +1372,7 @@ function getPieceArray(inpiece) {
     return all[inpiece];
 }
 
-// Opener assists
+// Opener assists (DEPRECATED)
 function getOpenerAs(inopener) {
     var all = {
         "pco": [
