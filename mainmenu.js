@@ -4,6 +4,7 @@ v1.1.5
 > Added drop speed factor
 > Added Recovery Challenge (random pieces tower)
 > REMOVED opener assists
+> UI improvements
 
 v1.1.4
 > T-spin detection and B2B fix
