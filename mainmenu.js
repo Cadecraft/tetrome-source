@@ -2,6 +2,7 @@
 /*
 v1.1.6
 > Improved performance (reduced getElementById calls per frame)
+> Improved performance significantly (moved piece data to constant)
 
 v1.1.5
 > Added drop speed factor
@@ -26,6 +27,7 @@ v1.1.4
 > Add bonus stat at the bottom: All Clear Rate
 > Improve soft drop/auto drop locking issues and timing
 > Improve T-spin detection
+> Replace getPieceArray with a direct access of a map
 
 > One day: Publish to web store?
 > One day: multiplayer server?
@@ -249,7 +251,7 @@ class Piece {
         this.rot = 0;
         this.x = 3;
         this.y = 0;
-        this.typearray = getPieceArray(this.type);
+        this.typearray = pieceArrays[this.type]; //getPieceArray(this.type);
         //dastimer = handl_das;
     }
     drop(dist) {
@@ -879,7 +881,7 @@ function render() {
     for(let i = 0; i < 6; i++) {
         for(let y = 0; y < 4; y++) {
             for(let x = 0; x < 4; x++) {
-                var thisblock = getPieceArray(gen_all[gen_thispiece+i])[0][y][x];
+                var thisblock = pieceArrays[gen_all[gen_thispiece+i]][0][y][x]; //getPieceArray(gen_all[gen_thispiece+i])[0][y][x];
                 if(thisblock != 0 && isdead) { thisblock = -1; }
                 if(thisblock != 0) {
                     //const img = document.getElementById(blockpcs[thisblock]);
@@ -894,7 +896,7 @@ function render() {
     if(inhold != '') {
         for(let y = 0; y < 4; y++) {
             for(let x = 0; x < 4; x++) {
-                var thisblock = getPieceArray(inhold)[0][y][x];
+                var thisblock = pieceArrays[inhold][0][y][x]; //getPieceArray(inhold)[0][y][x];
                 if(thisblock != 0) {
                     if(usedswap) { thisblock = -1; }
                     //ctx.fillStyle = blockcolors[thisblock];
@@ -1190,7 +1192,9 @@ function recoverychalgo() {
     // Fill bottom with random pieces
     for(let i = 0; i < 8; i++) {
         // Choose piece
-        var toaddp = getPieceArray((['z','t','s','o','l','j','i'])[Math.floor(Math.random()*7)])[0];
+        let chosenRandomPiece = (['z','t','s','o','l','j','i'])[Math.floor(Math.random()*7)];
+        var toaddp = pieceArrays[chosenRandomPiece][0];
+            //getPieceArray(chosenRandomPiece)[0];
         var px = Math.floor(Math.random()*6);
         var py = 2;
         var landed = false;
@@ -1225,163 +1229,9 @@ function lk_wasd() { helpinfo = 'Rotate: Left/Right/Up arrow\nMove: A/D\nHard dr
 function lk_dasarr() { helpinfo = 'DAS or Delay Auto Shift is the delay before a piece automatically moves left or right after input. ARR or Auto Repeat Rate is the speed at which it automatically moves.'; }
 function lk_strat() { helpinfo = 'Check the Hard Drop Tetris Wiki for strategies.'; }
 
-// Pieces
-function getPieceArray(inpiece) {
-    var all = {
-        "z": [
-            [[1,1,0,0],
-            [0,1,1,0],
-            [0,0,0,0],
-            [0,0,0,0]],
-            
-            [[0,0,1,0],
-            [0,1,1,0],
-            [0,1,0,0],
-            [0,0,0,0]],
-            
-            [[0,0,0,0],
-            [1,1,0,0],
-            [0,1,1,0],
-            [0,0,0,0]],
-            
-            [[0,1,0,0],
-            [1,1,0,0],
-            [1,0,0,0],
-            [0,0,0,0]]
-        ],
-        "t": [
-            [[0,2,0,0],
-            [2,2,2,0],
-            [0,0,0,0],
-            [0,0,0,0]],
-            
-            [[0,2,0,0],
-            [0,2,2,0],
-            [0,2,0,0],
-            [0,0,0,0]],
-            
-            [[0,0,0,0],
-            [2,2,2,0],
-            [0,2,0,0],
-            [0,0,0,0]],
-            
-            [[0,2,0,0],
-            [2,2,0,0],
-            [0,2,0,0],
-            [0,0,0,0]]
-        ],
-        "s": [
-            [[0,3,3,0],
-            [3,3,0,0],
-            [0,0,0,0],
-            [0,0,0,0]],
-            
-            [[0,3,0,0],
-            [0,3,3,0],
-            [0,0,3,0],
-            [0,0,0,0]],
-            
-            [[0,0,0,0],
-            [0,3,3,0],
-            [3,3,0,0],
-            [0,0,0,0]],
-            
-            [[3,0,0,0],
-            [3,3,0,0],
-            [0,3,0,0],
-            [0,0,0,0]]
-        ],
-        "o": [
-            [[0,4,4,0],
-            [0,4,4,0],
-            [0,0,0,0],
-            [0,0,0,0]],
-            
-            [[0,4,4,0],
-            [0,4,4,0],
-            [0,0,0,0],
-            [0,0,0,0]],
-            
-            [[0,4,4,0],
-            [0,4,4,0],
-            [0,0,0,0],
-            [0,0,0,0]],
-            
-            [[0,4,4,0],
-            [0,4,4,0],
-            [0,0,0,0],
-            [0,0,0,0]]
-        ],
-        "l": [
-            [[0,0,5,0],
-            [5,5,5,0],
-            [0,0,0,0],
-            [0,0,0,0]],
-            
-            [[0,5,0,0],
-            [0,5,0,0],
-            [0,5,5,0],
-            [0,0,0,0]],
-            
-            [[0,0,0,0],
-            [5,5,5,0],
-            [5,0,0,0],
-            [0,0,0,0]],
-            
-            [[5,5,0,0],
-            [0,5,0,0],
-            [0,5,0,0],
-            [0,0,0,0]]
-        ],
-        "j": [
-            [[6,0,0,0],
-            [6,6,6,0],
-            [0,0,0,0],
-            [0,0,0,0]],
-            
-            [[0,6,6,0],
-            [0,6,0,0],
-            [0,6,0,0],
-            [0,0,0,0]],
-            
-            [[0,0,0,0],
-            [6,6,6,0],
-            [0,0,6,0],
-            [0,0,0,0]],
-            
-            [[0,6,0,0],
-            [0,6,0,0],
-            [6,6,0,0],
-            [0,0,0,0]]
-        ],
-        "i": [
-            [[0,0,0,0],
-            [7,7,7,7],
-            [0,0,0,0],
-            [0,0,0,0]],
-            
-            [[0,0,7,0],
-            [0,0,7,0],
-            [0,0,7,0],
-            [0,0,7,0]],
-            
-            [[0,0,0,0],
-            [0,0,0,0],
-            [7,7,7,7],
-            [0,0,0,0]],
-            
-            [[0,7,0,0],
-            [0,7,0,0],
-            [0,7,0,0],
-            [0,7,0,0]]
-        ]
-    };
-    return all[inpiece];
-}
-
 // Opener assists (DEPRECATED)
 function getOpenerAs(inopener) {
-    var all = {
+    const all = {
         "pco": [
                 [0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0],
