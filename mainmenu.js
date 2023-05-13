@@ -1,5 +1,8 @@
 // Added:
 /*
+v1.1.6
+> Improved performance (reduced getElementById calls per frame)
+
 v1.1.5
 > Added drop speed factor
 > Added Recovery Challenge (random pieces tower)
@@ -102,6 +105,10 @@ var blockpcs = {
     '-2': 'pcDed', // Dead
     '-3': 'pcBac_nogrid', // BG no grid
     '-5': 'pcAssist'
+}
+var blockpcsimgs = {};
+for(let i = 0; i < Object.keys(blockpcs).length; i++) {
+    blockpcsimgs[Object.keys(blockpcs)[i]] = document.getElementById(blockpcs[Object.keys(blockpcs)[i]]);
 }
 // Dbg
 var dbg = '';
@@ -794,8 +801,7 @@ function render() {
                     thisblock = -5;
                 }
             }*/
-            const img = document.getElementById(blockpcs[thisblock]);
-            ctx.drawImage(img, 0, 0, 20, 20, x*20, y*20, 20, 20);
+            ctx.drawImage(blockpcsimgs[thisblock], 0, 0, 20, 20, x*20, y*20, 20, 20);
             //ctx.fillStyle = blockcolors[thisblock];
             //ctx.fillRect(x*20, y*20, 20, 20);
         }
@@ -876,8 +882,8 @@ function render() {
                 var thisblock = getPieceArray(gen_all[gen_thispiece+i])[0][y][x];
                 if(thisblock != 0 && isdead) { thisblock = -1; }
                 if(thisblock != 0) {
-                    const img = document.getElementById(blockpcs[thisblock]);
-                    ctx.drawImage(img, 0, 0, 15, 15, (x+14)*15, (y+(i*3+1))*15, 15, 15);
+                    //const img = document.getElementById(blockpcs[thisblock]);
+                    ctx.drawImage(blockpcsimgs[thisblock], 0, 0, 15, 15, (x+14)*15, (y+(i*3+1))*15, 15, 15);
                     //ctx.fillStyle = blockcolors[thisblock];
                     //ctx.fillRect((x+14)*15, (y+(i*3+1))*15, 15, 15);
                 }
@@ -892,8 +898,8 @@ function render() {
                 if(thisblock != 0) {
                     if(usedswap) { thisblock = -1; }
                     //ctx.fillStyle = blockcolors[thisblock];
-                    const img = document.getElementById(blockpcs[thisblock]);
-                    ctx.drawImage(img, 0, 0, 15, 15, Math.round((x+0.5)*15), Math.round((y+0.5)*15), 15, 15);
+                    //const img = document.getElementById(blockpcs[thisblock]);
+                    ctx.drawImage(blockpcsimgs[thisblock], 0, 0, 15, 15, Math.round((x+0.5)*15), Math.round((y+0.5)*15), 15, 15);
                     //ctx.fillRect((x+14)*15, (y+18)*15, 15, 15);
                     //ctx.fillRect(Math.round((x+0.5)*15), Math.round((y+0.5)*15), 15, 15);
                 }
