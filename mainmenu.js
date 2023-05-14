@@ -1,23 +1,24 @@
 // Added:
 /*
 v1.1.6
-> Improved performance (reduced getElementById calls per frame)
-> Improved performance significantly (moved piece data to constant)
+> Perf: reduce getElementById calls per frame
+> Perf: move piece data to a constant
+> Refactor: clean up code
 
 v1.1.5
-> Added drop speed factor
-> Added Recovery Challenge (random pieces tower)
-> REMOVED opener assists
+> Feat: add drop speed factor
+> Feat: add Recovery Challenge (random pieces tower)
+> REMOVE opener assists
 > UI improvements
 
 v1.1.4
 > T-spin detection and B2B fix
 > All-clear detection and rewards
-> Removed the "+5" notification on placing a piece
-> Added opener assists
-> Added instant soft drop setting
-> Prevented clipping on the cheese race
-> Fixed link to new cadecraft.github.io
+> REMOVE the "+5" notification on placing a piece
+> Feat: add opener assists
+> Feat: add instant soft drop setting
+> Fix: prevent clipping on the cheese race
+> Fix: link to new cadecraft.github.io
 */
 
 // To do:
@@ -37,77 +38,27 @@ v1.1.4
 // Vars
 var test_num = 0;
 var animalpha = 0.5;
-var mymap = [
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0]
-];
-var thisframe = [
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0]
-];
+var mymap = [];
+function reset_mymap() {
+    mymap = []; // Generate a 10x20 grid with each cell set to 0
+    for(let y = 0; y < 20; y++) {
+        let thisRow = [];
+        for(let x = 0; x < 10; x++) thisRow.push(0);
+        mymap.push(thisRow);
+    }
+}
+reset_mymap();
+var thisframe = [];
+function reset_thisframe() {
+    thisframe = []; // Generate a 10x20 grid with each cell set to 0
+    for(let y = 0; y < 20; y++) {
+        let thisRow = [];
+        for(let x = 0; x < 10; x++) thisRow.push(0);
+        thisframe.push(thisRow);
+    }
+}
+reset_thisframe();
 var scoremsgs = []
-var blockcolors = {
-    '0': '#0c0e12', // BG; #171920, #0c0e12
-    '1': '#ff0000',
-    '2': '#6d22b3',
-    '3': '#39bd11',
-    '4': '#f5cc02',
-    '5': '#f56f02',
-    '6': '#0e4ecc',
-    '7': '#09d5e8',
-    '-1': '#282b36', // Ghost
-    '-2': '#4d5161' // Dead
-}
-var blockpcs = {
-    '0': 'pcBac', // BG
-    '1': 'pcRed',
-    '2': 'pcPrp',
-    '3': 'pcGrn',
-    '4': 'pcYlw',
-    '5': 'pcOrg',
-    '6': 'pcBlu',
-    '7': 'pcCyn',
-    '-1': 'pcGhs', // Ghost
-    '-2': 'pcDed', // Dead
-    '-3': 'pcBac_nogrid', // BG no grid
-    '-5': 'pcAssist'
-}
 var blockpcsimgs = {};
 for(let i = 0; i < Object.keys(blockpcs).length; i++) {
     blockpcsimgs[Object.keys(blockpcs)[i]] = document.getElementById(blockpcs[Object.keys(blockpcs)[i]]);
@@ -291,72 +242,41 @@ class Piece {
             if(this.rot > 3) {
                 this.rot = 0;
             }
-            if(!ispiecevalid()) {
-                // Invalid; do not return
-            }
-            else {
-                return;
-            }
+            if(ispiecevalid()) return; // Piece is already valid
         }
         else if(right) {
             this.rot ++;
             if(this.rot > 3) {
                 this.rot = 0;
             }
-            if(!ispiecevalid()) {
-                // Invalid; do not return
-            }
-            else {
-                return;
-            }
+            if(ispiecevalid()) return; // Piece is already valid
         }  
         else {
             this.rot --;
             if(this.rot < 0) {
                 this.rot = 3;
             }
-            if(!ispiecevalid()) {
-                // Invalid; do not return
-            }
-            else {
-                return;
-            }
+            if(ispiecevalid()) return; // Piece is already valid
         }
         // Continue trying to move l/r
         this.x ++; // 0 Down
-        if(ispiecevalid()) {
-            return;
-        }
+        if(ispiecevalid()) return;
         this.x -= 2;
-        if(ispiecevalid()) {
-            return;
-        }
+        if(ispiecevalid()) return;
         this.x ++; // 1 Down
         this.y ++;
-        if(ispiecevalid()) {
-            return;
-        }
+        if(ispiecevalid()) return;
         this.x ++;
-        if(ispiecevalid()) {
-            return;
-        }
+        if(ispiecevalid()) return;
         this.x -= 2;
-        if(ispiecevalid()) {
-            return;
-        }
+        if(ispiecevalid()) return;
         this.x ++; // 2 Down
         this.y ++;
-        if(ispiecevalid()) {
-            return;
-        }
+        if(ispiecevalid()) return;
         this.x ++;
-        if(ispiecevalid()) {
-            return;
-        }
+        if(ispiecevalid()) return;
         this.x -= 2;
-        if(ispiecevalid()) {
-            return;
-        }
+        if(ispiecevalid()) return;
         this.y -= 2;
         this.x ++;
         this.rot = orig;
@@ -375,50 +295,8 @@ function resetall() {
     reset_gen();
     mypiece.settypearray(gen_all[0]);
     gen_thispiece ++;
-    mymap = [
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0]
-    ];
-    thisframe = [
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0]
-    ];
+    reset_mymap();
+    reset_thisframe();
 }
 
 // Load vars
@@ -798,14 +676,14 @@ function render() {
             var thisblock = thisframe[y][x];
             if(thisblock != 0 && isdead) { thisblock = -2; }
             if(thisblock == 0 && !gridon ) { thisblock = -3; }
+            // Opener assist (deprecated)
             /*if(thisblock == 0 && document.getElementById('openeras').value != "none") {
-                if(getOpenerAs(document.getElementById('openeras').value)[y][x] == 1) {
+                if(document.getElementById('openeras').value in openerAssistArrays &&
+                    openerAssistArrays[document.getElementById('openeras').value][y][x] == 1) {
                     thisblock = -5;
                 }
             }*/
             ctx.drawImage(blockpcsimgs[thisblock], 0, 0, 20, 20, x*20, y*20, 20, 20);
-            //ctx.fillStyle = blockcolors[thisblock];
-            //ctx.fillRect(x*20, y*20, 20, 20);
         }
     }
     // Render scoremsgs
@@ -881,13 +759,10 @@ function render() {
     for(let i = 0; i < 6; i++) {
         for(let y = 0; y < 4; y++) {
             for(let x = 0; x < 4; x++) {
-                var thisblock = pieceArrays[gen_all[gen_thispiece+i]][0][y][x]; //getPieceArray(gen_all[gen_thispiece+i])[0][y][x];
+                var thisblock = pieceArrays[gen_all[gen_thispiece+i]][0][y][x];
                 if(thisblock != 0 && isdead) { thisblock = -1; }
                 if(thisblock != 0) {
-                    //const img = document.getElementById(blockpcs[thisblock]);
                     ctx.drawImage(blockpcsimgs[thisblock], 0, 0, 15, 15, (x+14)*15, (y+(i*3+1))*15, 15, 15);
-                    //ctx.fillStyle = blockcolors[thisblock];
-                    //ctx.fillRect((x+14)*15, (y+(i*3+1))*15, 15, 15);
                 }
             }
         }
@@ -896,14 +771,10 @@ function render() {
     if(inhold != '') {
         for(let y = 0; y < 4; y++) {
             for(let x = 0; x < 4; x++) {
-                var thisblock = pieceArrays[inhold][0][y][x]; //getPieceArray(inhold)[0][y][x];
+                var thisblock = pieceArrays[inhold][0][y][x];
                 if(thisblock != 0) {
                     if(usedswap) { thisblock = -1; }
-                    //ctx.fillStyle = blockcolors[thisblock];
-                    //const img = document.getElementById(blockpcs[thisblock]);
                     ctx.drawImage(blockpcsimgs[thisblock], 0, 0, 15, 15, Math.round((x+0.5)*15), Math.round((y+0.5)*15), 15, 15);
-                    //ctx.fillRect((x+14)*15, (y+18)*15, 15, 15);
-                    //ctx.fillRect(Math.round((x+0.5)*15), Math.round((y+0.5)*15), 15, 15);
                 }
             }
         }
@@ -938,7 +809,6 @@ function input() {
         if(keys['a']) { inputs.push('rot80'); keys['a'] = false; }
         if(keys['r']) { inputs.push('reset'); keys['r'] = false; }
     }
-    //this.document.getElementById('status').innerText = '(dbg) Total inputs: '+inputs.length;
     // Depending on inputs
     if(inputs.includes('hold')) {
         if(!usedswap) {
@@ -1023,16 +893,12 @@ function input() {
 // Saving/loading
 function saveData(inname, value) {
     chrome.storage.local.set({inname: value});
-    //alert('Saved the data: '+inname+', '+value);
 }
 function loadData(name) {
     var newres;
     try {
-        // Issue is possibly that this is an async function
-        //(https://stackoverflow.com/questions/54645390/chrome-storage-local-get-returns-undefined)
         chrome.storage.local.get(name, function(result) {
             // result OR result.key?
-            //alert('Retreiving data. . . '+result);
             newres = result;
         })
         return newres;
@@ -1194,7 +1060,6 @@ function recoverychalgo() {
         // Choose piece
         let chosenRandomPiece = (['z','t','s','o','l','j','i'])[Math.floor(Math.random()*7)];
         var toaddp = pieceArrays[chosenRandomPiece][0];
-            //getPieceArray(chosenRandomPiece)[0];
         var px = Math.floor(Math.random()*6);
         var py = 2;
         var landed = false;
@@ -1228,64 +1093,3 @@ function lk_guid() { helpinfo = 'Rotate: X/Z/A\nMove: Left/Right arrow\nHard dro
 function lk_wasd() { helpinfo = 'Rotate: Left/Right/Up arrow\nMove: A/D\nHard drop: S/Space\nSoft drop: W\nHold: Shift\nRestart: R'; }
 function lk_dasarr() { helpinfo = 'DAS or Delay Auto Shift is the delay before a piece automatically moves left or right after input. ARR or Auto Repeat Rate is the speed at which it automatically moves.'; }
 function lk_strat() { helpinfo = 'Check the Hard Drop Tetris Wiki for strategies.'; }
-
-// Opener assists (DEPRECATED)
-function getOpenerAs(inopener) {
-    const all = {
-        "pco": [
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [1,1,1,1,0,0,0,0,1,1],
-                [1,1,1,1,0,0,0,1,1,1],
-                [1,1,1,1,0,0,1,1,1,1],
-                [1,1,1,1,0,0,0,1,1,1]
-            ],
-        "tki": [
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0],
-                [1,0,0,1,1,0,1,0,0,0],
-                [1,0,0,0,1,1,1,1,1,1],
-                [1,1,0,1,1,1,1,1,1,1]
-            ]
-    };
-    if(inopener == "none") {
-        console.log('err: inopener == none');
-        return;
-    } else {
-        try {
-            return all[inopener];
-        } catch(err) {
-            console.log('err: inopener does not exist');
-            return;
-        }
-    }
-}
