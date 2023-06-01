@@ -1,6 +1,7 @@
 // Added:
 /*
 v1.1.6
+> Fix: uniformly distributed piece choice in bag
 > Perf: reduce getElementById calls per frame
 > Perf: move piece data to a constant
 > Refactor: clean up code
@@ -138,7 +139,7 @@ for(let i = 0; i < 1000; i++) {
         gen_bag = [...gen_types];
     }
     // Randomly choose an element from the bag
-    var elem = Math.round(Math.random()*(gen_bag.length-1));
+    var elem = Math.floor(Math.random()*gen_bag.length);
     // Move that element from the bag to the total list
     gen_all.push(gen_bag[elem]);
     gen_bag.splice(elem, 1);
@@ -155,7 +156,7 @@ function reset_gen() {
             gen_bag = [...gen_types];
         }
         // Randomly choose an element from the bag
-        var elem = Math.round(Math.random()*(gen_bag.length-1));
+        var elem = Math.floor(Math.random()*gen_bag.length);
         // Move that element from the bag to the total list
         gen_all.push(gen_bag[elem]);
         gen_bag.splice(elem, 1);
