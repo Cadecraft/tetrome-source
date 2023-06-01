@@ -1,7 +1,9 @@
 // Added:
 /*
-v1.1.6
+v1.1.7
 > Fix: uniformly distributed piece choice in bag
+
+v1.1.6
 > Perf: reduce getElementById calls per frame
 > Perf: move piece data to a constant
 > Refactor: clean up code
@@ -24,6 +26,8 @@ v1.1.4
 
 // To do:
 /*
+> Release v1.1.7
+> Improve piece generation (1000+)
 > Cheese race - remove sprint score saving?
 > Improve rendering efficiency/performance?
 > Add bonus stat at the bottom: All Clear Rate
