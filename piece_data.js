@@ -173,7 +173,7 @@ const blockpcs = {
     '-2': 'pcDed', // Dead
     '-3': 'pcBac_nogrid', // BG no grid
     '-5': 'pcAssist'
-}
+};
 
 const openerAssistArrays = {
     "pco": [
@@ -220,4 +220,4 @@ const openerAssistArrays = {
         [1,0,0,0,1,1,1,1,1,1],
         [1,1,0,1,1,1,1,1,1,1]
     ]
-}
+};

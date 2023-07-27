@@ -220,7 +220,7 @@ class Piece {
     drop(dist) {
         for (let i = 0; i < dist; i++) {
             // Increase y
-            this.y ++;
+            this.y++;
             // Check if piece is valid
             if (!ispiecevalid()) {
                 this.y --;
@@ -231,7 +231,7 @@ class Piece {
     }
     move(right) {
         if (right) {
-            this.x ++;
+            this.x++;
             if (!ispiecevalid()) {
                 this.x --;
             }
@@ -239,25 +239,25 @@ class Piece {
         else {
             this.x --;
             if (!ispiecevalid()) {
-                this.x ++;
+                this.x++;
             }
         }
     }
     rotf(right, eighty) {
         let orig = this.rot;
         if (eighty) {
-            this.rot ++;
+            this.rot++;
             if (this.rot > 3) {
                 this.rot = 0;
             }
-            this.rot ++;
+            this.rot++;
             if (this.rot > 3) {
                 this.rot = 0;
             }
             if (ispiecevalid()) return; // Piece is already valid
         }
         else if (right) {
-            this.rot ++;
+            this.rot++;
             if (this.rot > 3) {
                 this.rot = 0;
             }
@@ -271,32 +271,32 @@ class Piece {
             if (ispiecevalid()) return; // Piece is already valid
         }
         // Continue trying to move l/r
-        this.x ++; // 0 Down
+        this.x++; // 0 Down
         if (ispiecevalid()) return;
         this.x -= 2;
         if (ispiecevalid()) return;
-        this.x ++; // 1 Down
-        this.y ++;
+        this.x++; // 1 Down
+        this.y++;
         if (ispiecevalid()) return;
-        this.x ++;
+        this.x++;
         if (ispiecevalid()) return;
         this.x -= 2;
         if (ispiecevalid()) return;
-        this.x ++; // 2 Down
-        this.y ++;
+        this.x++; // 2 Down
+        this.y++;
         if (ispiecevalid()) return;
-        this.x ++;
+        this.x++;
         if (ispiecevalid()) return;
         this.x -= 2;
         if (ispiecevalid()) return;
         this.y -= 2;
-        this.x ++;
+        this.x++;
         this.rot = orig;
     }
 };
 
 let mypiece = new Piece(gen_all[0]);
-gen_thispiece ++;
+gen_thispiece++;
 
 // Reset all function
 function resetall() {
@@ -306,7 +306,7 @@ function resetall() {
     reset_vars();
     reset_gen();
     mypiece.settypearray(gen_all[0]);
-    gen_thispiece ++;
+    gen_thispiece++;
     reset_mymap();
     reset_thisframe();
 }
@@ -390,11 +390,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     sync();
 });
 
-// Notify
-function notify() {
-    alert('You have been notified.')
-}
-
 // Sync
 function sync() {
     /*chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
@@ -404,18 +399,17 @@ function sync() {
     })*/
 }
 
-// Set text functions
+// Set display text
 const textMainTime = document.getElementById("time");
 const textMainSecs = document.getElementById("secs");
 const textMainText1 = document.getElementById("text1");
-
 function setTextMain(time, secs, text) {
     textMainTime.innerText = time;
     textMainSecs.innerText = secs;
     textMainText1.innerText = text;
 }
 
-// Timer
+// Game loop timer
 var loopms = 5;
 var gameinterval = setInterval(function(){
     gameloop();
@@ -521,8 +515,8 @@ function gameloop() {
         }
         addPieceMap();
         mypiece.settypearray(gen_all[gen_thispiece]);
-        gen_thispiece ++;
-        piecesplaced ++;
+        gen_thispiece++;
+        piecesplaced++;
         usedswap = false;
         autotimer = 0;
         // Line clearing and scoring
@@ -537,41 +531,41 @@ function gameloop() {
             // 1; check tspin
             if (wastspin) {
                 score_score += 400;
-                score_b2b ++;
+                score_b2b++;
             }
             else {
                 score_score += 100;
                 score_b2b = 0;
             }
-            score_combo ++;
+            score_combo++;
         } else if (totalcleared == 2) {
             // 2; check tspin
             if (wastspin) {
                 score_score += 700;
-                score_b2b ++;
+                score_b2b++;
             }
             else {
                 score_score += 200;
                 score_b2b = 0;
             }
-            score_combo ++;
+            score_combo++;
         } else if (totalcleared == 3) {
             // 3
             score_score += 400;
             score_b2b = 0;
-            score_combo ++;
+            score_combo++;
         } else if (totalcleared >= 4) {
             // 4
             score_score += 700;
-            score_b2b ++;
-            score_combo ++;
+            score_b2b++;
+            score_combo++;
         }
         // Extras
         if (score_combo >= 1 && totalcleared != 0) {
-            score_score += 50*(score_combo-1);
+            score_score += 50 * (score_combo - 1);
         }
         if (score_b2b >= 1 && totalcleared != 0) {
-            score_score += 100*(score_b2b-1);
+            score_score += 100 * (score_b2b - 1);
         }
         // All clear detection
         let allcleared = true;
@@ -589,8 +583,8 @@ function gameloop() {
             }
         }
         // Leveling
-        if (Math.floor((score_lines/10)) > level-1) {
-            level = Math.floor((score_lines/10));
+        if (Math.floor((score_lines / 10)) > level-1) {
+            level = Math.floor((score_lines / 10));
         }
         // Add score info to display and choose color
         let tcolor = '#5e73b9';
@@ -631,8 +625,8 @@ function gameloop() {
     }
     // PPS counter - Conversion
     let ppstime = 0.5;
-    if (ppscountertimer >= ppstime*1000) {
-        pps = piecesplaced/(totaltime/1000);
+    if (ppscountertimer >= ppstime * 1000) {
+        pps = piecesplaced / (totaltime / 1000);
         ppscountertimer = 0;
     }
     // Highscore test
@@ -669,7 +663,7 @@ function clearlines() {
         if (clear) {
             mymap.splice(y, 1);
             mymap.splice(0, 0, [0,0,0,0,0,0,0,0,0,0]);
-            total ++;
+            total++;
         }
     }
     return total;
@@ -693,7 +687,7 @@ function render() {
             let thisblock = thisframe[y][x];
             if (thisblock != 0 && isdead) { thisblock = -2; }
             if (thisblock == 0 && !gridon ) { thisblock = -3; }
-            ctx.drawImage(blockpcsimgs[thisblock], 0, 0, 20, 20, x*20, y*20, 20, 20);
+            ctx.drawImage(blockpcsimgs[thisblock], 0, 0, 20, 20, x * 20, y * 20, 20, 20);
         }
     }
     // Render scoremsgs
@@ -711,7 +705,7 @@ function render() {
             // Render text
             ctx.fillStyle = scoremsgs[i].color;
             ctx.font = 'bold 20px arial';
-            ctx.fillText('+'+scoremsgs[i].amt, scoremsgs[i].posx, scoremsgs[i].posy);
+            ctx.fillText('+' + scoremsgs[i].amt, scoremsgs[i].posx, scoremsgs[i].posy);
             // If high level, flash entire board orange/gold
             if (scoremsgs[i].amt >= 1000) {
                 ctx.globalAlpha = ctx.globalAlpha/2.5;
@@ -728,7 +722,7 @@ function render() {
     ctx.globalAlpha = animalpha;
     // Render scoring
     if (isdead) {
-        textMainScore.innerText = 'Block out! Score: '+score_score;
+        textMainScore.innerText = 'Block out! Score: ' + score_score;
     }
     else {
         if (gravfac != 1) {
@@ -736,18 +730,18 @@ function render() {
             textMainScore.style.fontSize = '12px';
         }
         else {
-            textMainScore.innerText = 'Score: '+score_score;
+            textMainScore.innerText = 'Score: ' + score_score;
             textMainScore.style.fontSize = '20px';
         }
     }
-    document.getElementById('b2b').innerText = 'B2B: '+score_b2b+'\t\t\tLines: '+score_lines;
+    document.getElementById('b2b').innerText = 'B2B: ' + score_b2b + '\t\t\tLines: ' + score_lines;
     if (timeto40 != 0) {
-        document.getElementById('combo').innerText = 'Combo: '+score_combo+'\t\tTime: '+(Math.round(totaltime/10)/100).toFixed(2)+'s'+' (40: '+(Math.round(timeto40/10)/100).toFixed(2)+'s)';
+        document.getElementById('combo').innerText = 'Combo: ' + score_combo + '\t\tTime: ' + (Math.round(totaltime / 10) / 100).toFixed(2) + 's' + ' (40: ' + (Math.round(timeto40 / 10) / 100).toFixed(2) + 's)';
     }
     else {
-        document.getElementById('combo').innerText = 'Combo: '+score_combo+'\t\tTime: '+(Math.round(totaltime/10)/100).toFixed(2)+'s';
+        document.getElementById('combo').innerText = 'Combo: ' + score_combo + '\t\tTime: ' + (Math.round(totaltime / 10) / 100).toFixed(2) + 's';
     }
-    document.getElementById('highscore').innerText = 'PPS: '+(Math.round(pps*100)/100).toFixed(2)+'\t\tHighscore: '+score_highscore+' (40: '+(Math.round(score_high40/10)/100).toFixed(2)+'s)';
+    document.getElementById('highscore').innerText = 'PPS: ' + (Math.round(pps * 100) / 100).toFixed(2) + '\t\tHighscore: ' + score_highscore + ' (40: ' + (Math.round(score_high40 / 10) / 100).toFixed(2) + 's)';
     // Render settings
     let wasdtxt = 'WASD';
     if (!wasd) {
@@ -758,9 +752,9 @@ function render() {
     let sdf_instant_disp = "Fast";
     if (sdf_instant) { sdf_instant_disp = "Instant"; }
     document.getElementById('setdisp').innerText = 'CURRENT SETTINGS:\nControls - '
-    +wasdtxt+'\nDAS - '+handl_das+'ms\nARR - '+handl_arr+'ms\nGrid - '+griddisp
-    +'\nSDF - '+sdf_instant_disp+'\n\nUse the dropdown to choose a preset. Your settings and highscore will be saved.\n\n'
-    +helpinfo;
+        + wasdtxt + '\nDAS - ' + handl_das + 'ms\nARR - ' + handl_arr + 'ms\nGrid - ' + griddisp
+        + '\nSDF - ' + sdf_instant_disp + '\n\nUse the dropdown to choose a preset. Your settings and highscore will be saved.\n\n'
+        + helpinfo;
     //+handl_arr+'ms\n\nNote: DAS is the time between your first keypress and when the piece starts automatically moving.\nARR is the speed at which it then moves.';
     // Render next up
     for (let i = 0; i < 6; i++) {
@@ -824,7 +818,7 @@ function input() {
                 // Move piece to hold
                 inhold = mypiece.type;
                 mypiece.settypearray(gen_all[gen_thispiece]);
-                gen_thispiece ++;
+                gen_thispiece++;
             }
             else {
                 // Swap with hold
