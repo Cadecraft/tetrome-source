@@ -4,6 +4,7 @@ v1.1.7
 > Fix: uniformly distributed piece choice in bag
 > Feat: upside-down mode (not fully implemented)
 > Refactor: clean up code
+> Perf: reduce getElementById calls per frame
 
 v1.1.6
 > Perf: reduce getElementById calls per frame
@@ -28,6 +29,8 @@ v1.1.4
 
 // To do:
 /*
+> Feat: upside-down mode
+> Fix: after 1000 pieces, game may crash (because of early piece generation)
 > Release v1.1.7
 > Improve piece generation (1000+)
 > Cheese race - remove sprint score saving?
@@ -402,10 +405,14 @@ function sync() {
 }
 
 // Set text functions
+const textMainTime = document.getElementById("time");
+const textMainSecs = document.getElementById("secs");
+const textMainText1 = document.getElementById("text1");
+
 function setTextMain(time, secs, text) {
-    document.getElementById("time").innerText = time;
-    document.getElementById("secs").innerText = secs;
-    document.getElementById("text1").innerText = text;
+    textMainTime.innerText = time;
+    textMainSecs.innerText = secs;
+    textMainText1.innerText = text;
 }
 
 // Timer
@@ -668,6 +675,9 @@ function clearlines() {
     return total;
 }
 
+// References for rendering
+const textMainScore = document.getElementById("score");
+
 // Render
 function render() {
     let canvas = document.getElementById('mainfield');
@@ -718,20 +728,17 @@ function render() {
     ctx.globalAlpha = animalpha;
     // Render scoring
     if (isdead) {
-        document.getElementById('score').innerText = 'Block out! Score: '+score_score;
+        textMainScore.innerText = 'Block out! Score: '+score_score;
     }
     else {
         if (gravfac != 1) {
-            if (document.getElementById('score').innerText != 'Gravity factor changed (unscored)') {
-                document.getElementById('score').innerText = 'Gravity factor changed (unscored)';
-                document.getElementById('score').style.fontSize = '12px';
-            }
+            textMainScore.innerText = 'Gravity factor changed (unscored)';
+            textMainScore.style.fontSize = '12px';
         }
         else {
-            document.getElementById('score').innerText = 'Score: '+score_score;
-            document.getElementById('score').style.fontSize = '20px';
+            textMainScore.innerText = 'Score: '+score_score;
+            textMainScore.style.fontSize = '20px';
         }
-        
     }
     document.getElementById('b2b').innerText = 'B2B: '+score_b2b+'\t\t\tLines: '+score_lines;
     if (timeto40 != 0) {
