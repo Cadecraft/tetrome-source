@@ -4,8 +4,6 @@
 	"version": "1.1.7",
 	"description": "The best ADVANCED stacker popup game for chrome! Control/handling options, T-spins, hold, kicks, bag generation, advanced stats, and more.",
 	"permissions": [
-		"contextMenus",
-		"tabs",
 		"storage"
 	],
 	"action": {
@@ -18,10 +16,5 @@
 	"32": "images/icon.png",
 	"48": "images/icon.png",
 	"128":"images/icon.png"
-	},
-	"content_scripts": [{
-		"matches": ["<all_urls>"],
-		"js": ["content.js"],
-		"run_at": "document_end"
-	}]
+	}
 }
