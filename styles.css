@@ -1,41 +1,36 @@
+/* Buttons */
 button {
-    /* Button
-    History: #2d3d73, #495c9c */
     background-color: #495c9c;
     color: white;
     border: none;
     border-radius: 1;
 }
 button:hover {
-    /* Hover button
-    History: #5e73b9 */
     background-color: #5e73b9;
 }
 button:active {
-    /* Active (clicked) button
-    History: #8293c9 */
     background-color: #8293c9;
 }
+/* Regular header */
 h1 {
-    /* Header (regular)
-    History: #d2d9f1 */
-    color:#d2d9f1;
-    font-size:12px;
+    color: #d2d9f1;
+    font-size: 12px;
 }
+/* Sub header */
 h2 {
-    /* Header (sub)
-    History: #9ca1b4 */
-    color:#9ca1b4;
-    font-size:12px;
+    color: #9ca1b4;
+    font-size: 12px;
 }
+/* Label */
 label {
-    /* Label */
-    color:#9ca1b4;
-    font-size:12px;
+    color: #9ca1b4;
+    font-size: 12px;
 }
+/* Hr */
 hr.solid {
     border-top: 2px solid #8293c9;
 }
+/* Remove scroll bar */
 .noScrollBar::-webkit-scrollbar{
     width: 0%;
 }
@@ -61,6 +56,8 @@ hr.solid {
 .popup .show {
     visibility: visible;
 }
+
+/* Links */
 a:link {
     color:#d2d9f1;
 }

@@ -31,6 +31,7 @@ v1.1.4
 /*
 > Feat: upside-down mode
 > Fix: after 1000 pieces, game may crash (because of early piece generation)
+> 4-wide option
 > Release v1.1.7
 > Improve piece generation (1000+)
 > Cheese race - remove sprint score saving?
