@@ -87,6 +87,7 @@ var autotimer = 0;
 var dastimer = 0;
 var arrtimer = 0;
 var ppscountertimer = 0;
+var starttime = Date.now();
 var cheeseint = 0;
 var cheesetimer = 0;
 var gravfac = 1; // gravity factor
@@ -106,7 +107,6 @@ var score_b2b = 0;
 var score_combo = 0;
 var score_lines = 0;
 var pps = 0;
-var totaltime = 0;
 var timeto40 = 0;
 var piecesplaced = 0;
 var inhold = '';
@@ -125,7 +125,6 @@ function reset_vars() {
     score_combo = 0;
     score_lines = 0;
     pps = 0;
-    totaltime = 0;
     timeto40 = 0;
     piecesplaced = 0;
     inhold = '';
@@ -136,9 +135,14 @@ function reset_vars() {
     dastimer = 0;
     arrtimer = 0;
     ppscountertimer = 0;
+    starttime = Date.now();
     level = 1;
     scoremsgs = []
     lastpiece = '';
+}
+// Get the time elapsed since the round started
+function timeElapsed() {
+    return Date.now() - starttime;
 }
 // Generate all pieces
 var gen_thispiece = 0;
@@ -467,7 +471,6 @@ function gameloop() {
         dastimer += loopms;
         arrtimer += loopms;
         ppscountertimer += loopms;
-        totaltime += loopms;
         cheesetimer += loopms;
         if (cheeseint > 0) {
             if (cheesetimer >= cheeseint*1000) {
@@ -577,7 +580,7 @@ function gameloop() {
         }
         // 40 lines save
         if (score_lines >= 40 && timeto40 == 0 && gravfac == 1) {
-            timeto40 = totaltime;
+            timeto40 = timeElapsed();
             if (timeto40 < score_high40 || score_high40 == 0) {
                 score_high40 = timeto40;
                 chrome.storage.local.set({'hiforty': score_high40.toString()});
@@ -627,7 +630,7 @@ function gameloop() {
     // PPS counter - Conversion
     let ppstime = 0.5;
     if (ppscountertimer >= ppstime * 1000) {
-        pps = piecesplaced / (totaltime / 1000);
+        pps = piecesplaced / (timeElapsed() / 1000);
         ppscountertimer = 0;
     }
     // Highscore test
@@ -737,10 +740,10 @@ function render() {
     }
     document.getElementById('b2b').innerText = 'B2B: ' + score_b2b + '\t\t\tLines: ' + score_lines;
     if (timeto40 != 0) {
-        document.getElementById('combo').innerText = 'Combo: ' + score_combo + '\t\tTime: ' + (Math.round(totaltime / 10) / 100).toFixed(2) + 's' + ' (40: ' + (Math.round(timeto40 / 10) / 100).toFixed(2) + 's)';
+        document.getElementById('combo').innerText = 'Combo: ' + score_combo + '\t\tTime: ' + (Math.round(timeElapsed() / 10) / 100).toFixed(2) + 's' + ' (40: ' + (Math.round(timeto40 / 10) / 100).toFixed(2) + 's)';
     }
     else {
-        document.getElementById('combo').innerText = 'Combo: ' + score_combo + '\t\tTime: ' + (Math.round(totaltime / 10) / 100).toFixed(2) + 's';
+        document.getElementById('combo').innerText = 'Combo: ' + score_combo + '\t\tTime: ' + (Math.round(timeElapsed() / 10) / 100).toFixed(2) + 's';
     }
     document.getElementById('highscore').innerText = 'PPS: ' + (Math.round(pps * 100) / 100).toFixed(2) + '\t\tHighscore: ' + score_highscore + ' (40: ' + (Math.round(score_high40 / 10) / 100).toFixed(2) + 's)';
     // Render settings
